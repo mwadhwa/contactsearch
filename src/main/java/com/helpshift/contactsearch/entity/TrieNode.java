@@ -52,6 +52,10 @@ public class TrieNode<E> implements Node<E>{
         this.value = value;
     }
 
+    @Override public boolean deleteChild(char ch) {
+        throw new UnsupportedOperationException();
+    }
+
     public Set<E> getEntities()
     {
         return this.entities;

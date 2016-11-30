@@ -60,4 +60,14 @@ public class RequestHandler {
         return firstNameSearches;
     }
 
+    /**
+     * currently throwing {@link UnsupportedOperationException}
+     * @param name
+     * @throws ContactSearchException
+     */
+    public void delete(String name) throws ContactSearchException
+    {
+        throw new UnsupportedOperationException();
+    }
+
 }

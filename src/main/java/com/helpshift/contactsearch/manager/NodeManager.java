@@ -32,4 +32,6 @@ public interface NodeManager<E> {
      */
     boolean insert(String txt, E entity) throws ContactSearchException;
 
+    boolean delete(String txt) throws ContactSearchException;
+
 }

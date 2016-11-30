@@ -50,5 +50,11 @@ public interface Node<E> {
      */
     void setValue(String value);
 
+    /**
+     * Delete the child at char C
+     * @param ch
+     * @return
+     */
+    boolean deleteChild(char ch);
 
 }

@@ -107,6 +107,16 @@ public class NodeManagerImpl implements NodeManager<Contact> {
         return insert(root, txt, entity);
     }
 
+    /**
+     * Implementation will be almost same as of insert. Currently throwing {@link UnsupportedOperationException}
+     * @param txt
+     * @return
+     * @throws ContactSearchException
+     */
+    @Override public boolean delete(String txt) throws ContactSearchException {
+        throw new UnsupportedOperationException();
+    }
+
     private boolean insert(Node node, String txt, Contact entity) {
 
         if (txt == null || txt.length() == 0)

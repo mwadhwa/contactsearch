@@ -125,4 +125,10 @@ public class TestNodeManagerImpl {
         nodeManager.insert("",new Contact("",""));
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testDelete() throws Exception
+    {
+        nodeManager.delete("something");
+    }
+
 }
