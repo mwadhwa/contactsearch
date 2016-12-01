@@ -52,12 +52,21 @@ public class RequestHandler {
 
         if (ContactSearchUtil.isNotNullOrEmptyString(lastName)) {
             Set<Contact> lastNameSearched = nodeManager.search(lastName);
+            /**Bug: In case If there is full name search, firstNameSearch list should have only exact name match**/
+            firstNameSearches = filterExactName(firstNameSearches,firstName);
             return firstNameSearches.stream()
                 .filter(lastNameSearched::contains)
                 .collect(Collectors.toSet());
         }
 
         return firstNameSearches;
+    }
+
+    private Set<Contact> filterExactName(Set<Contact> contacts, String firstName)
+    {
+        return contacts.stream()
+            .filter(contact -> contact.getFirstName().equals(firstName))
+            .collect(Collectors.toSet());
     }
 
     /**

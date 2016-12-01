@@ -103,7 +103,7 @@ public class TestNodeManagerImpl {
         nodeManager.insert("Suresh",new Contact("Suresh","Kumar"));
         nodeManager.insert("Haris",new Contact("Haris","John"));
         Set<Contact> contacts = nodeManager.search("H");
-        assert contacts.size() == 4;
+        assert contacts.size() == 3;
     }
 
     @Test
