@@ -1,8 +1,8 @@
 package com.helpshift.contactsearch.client;
 
 import com.helpshift.contactsearch.entity.Contact;
+import com.helpshift.contactsearch.store.EntityStore;
 import com.helpshift.contactsearch.exception.ContactSearchException;
-import com.helpshift.contactsearch.manager.NodeManager;
 import com.helpshift.contactsearch.util.ContactSearchUtil;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
  */
 public class RequestHandler {
 
-    private NodeManager<Contact> nodeManager;
+    private EntityStore<Contact> store;
 
-    public RequestHandler(NodeManager nodeManager) {
-        this.nodeManager = nodeManager;
+    public RequestHandler(EntityStore<Contact> nodeManager) {
+        this.store = nodeManager;
     }
 
     /**
@@ -29,7 +29,7 @@ public class RequestHandler {
      * It will persist 2 times, firstName as key and lastName as key
      * 2 times persistence requires to support lookup based on firstName and lastName
      * seprately.
-     * @param name
+     * @param name name to be stored
      */
     public void insert(String name) throws ContactSearchException{
         if(ContactSearchUtil.isNullOrEmptyString(name))
@@ -38,9 +38,9 @@ public class RequestHandler {
         String firstName = token.hasMoreTokens() ? token.nextToken() : "";
         String lastName = token.hasMoreTokens() ? token.nextToken() : "";
         Contact contact = new Contact(firstName,lastName);
-        nodeManager.insert(firstName,contact);
+        store.insert(firstName,contact);
         if(ContactSearchUtil.isNotNullOrEmptyString(lastName))
-        nodeManager.insert(lastName,contact);
+            store.insert(lastName,contact);
     }
 
     public Set<Contact> search(String text) throws ContactSearchException{
@@ -48,10 +48,10 @@ public class RequestHandler {
         StringTokenizer token = new StringTokenizer(text," ");
         String firstName = token.hasMoreTokens() ? token.nextToken() : "";
         String lastName = token.hasMoreTokens() ? token.nextToken() : "";
-        Set<Contact> firstNameSearches = nodeManager.search(firstName);
+        Set<Contact> firstNameSearches = store.search(firstName);
 
         if (ContactSearchUtil.isNotNullOrEmptyString(lastName)) {
-            Set<Contact> lastNameSearched = nodeManager.search(lastName);
+            Set<Contact> lastNameSearched = store.search(lastName);
             /**Bug: In case If there is full name search, firstNameSearch list should have only exact name match**/
             firstNameSearches = filterExactName(firstNameSearches,firstName);
             return firstNameSearches.stream()

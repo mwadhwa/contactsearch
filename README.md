@@ -1,5 +1,12 @@
 Contact Search Application
 
+
+Contact Search is based on compressed tries implementation. 
+Entity Store has inner class Node which holds the underlying data structure.
+As Node is not exposed to outer world so It make sense to have it as Inner class.
+whole CURD operations will be at EntityStoreLevel. 
+
+
 This allows searching of contacts based on First Name , lastName criteria.
 
 Internally, app is using compressed tries to store the entities.

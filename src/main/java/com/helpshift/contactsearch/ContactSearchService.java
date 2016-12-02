@@ -2,8 +2,8 @@ package com.helpshift.contactsearch;
 
 import com.helpshift.contactsearch.client.RequestHandler;
 import com.helpshift.contactsearch.entity.Contact;
+import com.helpshift.contactsearch.store.EntityStore;
 import com.helpshift.contactsearch.exception.ContactSearchException;
-import com.helpshift.contactsearch.manager.impl.NodeManagerImpl;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,7 +17,7 @@ public class ContactSearchService {
 
     private ContactSearchService()
     {
-        this.requestHandler = new RequestHandler(new NodeManagerImpl());
+        this.requestHandler = new RequestHandler(new EntityStore<>());
     }
 
     public static void main(String args[])

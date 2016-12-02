@@ -1,12 +1,10 @@
-package com.helpshift.contactsearch.manager.impl;
+package com.helpshift.contactsearch.store;
 
 import com.helpshift.contactsearch.entity.Contact;
-import com.helpshift.contactsearch.entity.Node;
-import com.helpshift.contactsearch.entity.TrieNode;
 import com.helpshift.contactsearch.exception.ContactSearchException;
-import com.helpshift.contactsearch.manager.NodeManager;
 import com.helpshift.contactsearch.util.ContactSearchUtil;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,16 +13,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 /**
- * Implementation of {@link NodeManager}
+ * Entity Store for storing and query entity based on given text.
+ * Current version of EntityStore {@version 1.0.0} implements Compressed Tries for Storing and Searching
+ * @param <E> Entity to be stored
  */
 @Slf4j
-public class NodeManagerImpl implements NodeManager<Contact> {
+public class EntityStore<E> {
 
     /** dummy root node. value is always null in this node**/
     private Node<Contact> root;
 
-    public NodeManagerImpl() {
-        this.root = new TrieNode<Contact>();
+    public EntityStore() {
+        this.root = new Node<>();
     }
 
     /**
@@ -49,7 +49,8 @@ public class NodeManagerImpl implements NodeManager<Contact> {
         return node != null ? node.getAllEntities() : new HashSet<>();
     }
 
-    private Node search(Node node, String txt) {
+    private Node search(
+        Node node, String txt) {
         char firstChar = txt.charAt(0);
 
         if (node == null)
@@ -113,7 +114,7 @@ public class NodeManagerImpl implements NodeManager<Contact> {
      * @return
      * @throws ContactSearchException
      */
-    @Override public boolean delete(String txt) throws ContactSearchException {
+    public boolean delete(String txt) throws ContactSearchException {
         throw new UnsupportedOperationException();
     }
 
@@ -146,7 +147,7 @@ public class NodeManagerImpl implements NodeManager<Contact> {
                 else {
                     if (txt.length() == matchLength) //text is smaller then storedValue
                     {
-                        TrieNode<Contact> newNode = createNode(entity, txt);
+                        Node<Contact> newNode = createNode(entity, txt);
                         node.addChild(firstChar, newNode);
                         char newFirstChild = storedValue.charAt(txt.length());
                         newNode.addChild(newFirstChild, child);
@@ -159,9 +160,9 @@ public class NodeManagerImpl implements NodeManager<Contact> {
                         String txtToStore = txt.substring(matchLength);
                         String matchedTxt = txt.substring(0, matchLength);
 
-                        TrieNode<Contact> matchedNode = createNode(null, matchedTxt);
+                        Node<Contact> matchedNode = createNode(null, matchedTxt);
                         child.setValue(storedValueSubstring);
-                        TrieNode<Contact> txtToStoreNode = createNode(entity, txtToStore);
+                        Node<Contact> txtToStoreNode = createNode(entity, txtToStore);
                         node.addChild(matchedTxt.charAt(0), matchedNode);
                         matchedNode.addChild(txtToStore.charAt(0), txtToStoreNode);
                         matchedNode.addChild(storedValueSubstring.charAt(0), child);
@@ -172,12 +173,12 @@ public class NodeManagerImpl implements NodeManager<Contact> {
         return true;
     }
 
-    private TrieNode<Contact> createNode(Contact entity, String txt) {
-        TrieNode<Contact> trieNode = new TrieNode<Contact>();
+    private Node<Contact> createNode(Contact entity, String txt) {
+        Node<Contact> Node = new Node<Contact>();
         if (entity != null)
-            trieNode.addEntity(entity);
-        trieNode.setValue(txt);
-        return trieNode;
+            Node.addEntity(entity);
+        Node.setValue(txt);
+        return Node;
     }
 
     /**
@@ -211,6 +212,72 @@ public class NodeManagerImpl implements NodeManager<Contact> {
     {
         log.warn(message);
         throw new ContactSearchException(message, errorCode);
+    }
+
+    private class Node<E>
+    {
+        /**compressed values stored at this node**/
+        private String value;
+        /**children nodes linked with current node**/
+        private Node[] children;
+        /**set of entities persisted at current node**/
+        private Set<E> entities;
+
+        private Node()
+        {
+            children = new Node[254];
+            entities = new HashSet<E>();
+        }
+
+        private Node<E> getChild(char ch)
+        {
+            return children[ch];
+        }
+
+        private void addEntity(E e)
+        {
+            entities.add(e);
+        }
+
+        private void addChild(char ch, Node<E> node)
+        {
+            children[ch] = node;
+        }
+
+        private String getValue()
+        {
+            return value;
+        }
+
+        private void setValue(String value)
+        {
+            this.value = value;
+        }
+
+        public boolean deleteChild(char ch) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set<E> getEntities()
+        {
+            return this.entities;
+        }
+
+        public void setEntities(Set<E> entities)
+        {
+            this.entities = entities;
+        }
+
+        private Set<E> getAllEntities()
+        {
+            Set<E> entities = new LinkedHashSet<E>();
+            entities.addAll(this.entities);
+            for(Node node : children)
+                if(node != null)
+                    entities.addAll(node.getAllEntities());
+            return entities;
+        }
+
     }
 
 }

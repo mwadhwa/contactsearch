@@ -4,7 +4,7 @@
 
   <groupId>com.helpshift.contactsearch</groupId>
   <artifactId>contactsearch</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>contact-search</name>
